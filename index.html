@@ -6,26 +6,38 @@
     <script src="js/vue.js"></script>
 </head>
 <body>
-<div id="app">
+<div id="todo-list-example">
+    <input v-model="newTodoText" v-on:keyup.enter="addNewTodo" placeholder="Add a todo">
     <ul>
-        <my-component v-for="(item, index) in items"
-                      v-bind:item="item" v-bind:index="index">
-        </my-component>
+        <li is="todo-item" v-for="(todo, index) in todos"
+            v-bind:title="todo" v-on:remove="todos.splice(index, 1)"></li>
     </ul>
 </div>
 <script>
-    Vue.component('my-component', {
-        props: ['item', 'index'],
-        template: '<li>{{index}} - {{item.msg}}</li>'
+    Vue.component('todo-item', {
+        template: '\
+        <li>\
+            {{title}}\
+            <button v-on:click="$emit(\'remove\')">x</button>\
+        </li>\
+        ',
+        props: ['title']
     });
-    var app = new Vue({
-        el: '#app',
+    new Vue({
+        el: '#todo-list-example',
         data: {
-            items: [
-                {msg: 'Foo'},
-                {msg: 'Bar'}
+            newTodoText: '',
+            todos: [
+                'Do the dished',
+                'Take out the trash',
+                'Mow the lawn'
             ]
-
+        },
+        method: {
+            addNewTodo: function () {
+                this.todos.push(this.newTodoText);
+                this.newTodoText = '';
+            }
         }
     });
 </script>
