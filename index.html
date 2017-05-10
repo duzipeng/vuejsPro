@@ -6,37 +6,32 @@
     <script src="js/vue.js"></script>
 </head>
 <body>
-<div id="todo-list-example">
-    <input v-model="newTodoText" v-on:keyup.enter="addNewTodo" placeholder="Add a todo">
+<div id="app">
     <ul>
-        <li is="todo-item" v-for="(todo, index) in todos"
-            v-bind:title="todo" v-on:remove="todos.splice(index, 1)"></li>
+        <li v-for="n in evenNumbers">{{n}}</li>
+    </ul>
+    <ul>
+        <li v-for="m in even(numbers)">{{m}}</li>
     </ul>
 </div>
 <script>
-    Vue.component('todo-item', {
-        template: '\
-        <li>\
-            {{title}}\
-            <button v-on:click="$emit(\'remove\')">x</button>\
-        </li>\
-        ',
-        props: ['title']
-    });
     new Vue({
-        el: '#todo-list-example',
+        el: '#app',
         data: {
-            newTodoText: '',
-            todos: [
-                'Do the dished',
-                'Take out the trash',
-                'Mow the lawn'
-            ]
+            numbers: [ 1, 2, 3, 4, 5 ]
         },
-        method: {
-            addNewTodo: function () {
-                this.todos.push(this.newTodoText);
-                this.newTodoText = '';
+        computed: {
+            evenNumbers: function () {
+                return this.numbers.filter(function (number) {
+                    return number % 2 === 0
+                })
+            }
+        },
+        methods: {
+            even: function (numbers) {
+                return numbers.filter(function (number) {
+                    return number % 2 === 0
+                })
             }
         }
     });
