@@ -7,31 +7,33 @@
 </head>
 <body>
 <div id="app">
-    <ul>
-        <li v-for="n in evenNumbers">{{n}}</li>
-    </ul>
-    <ul>
-        <li v-for="m in even(numbers)">{{m}}</li>
-    </ul>
+    <p>{{total}}</p>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
 </div>
 <script>
-    new Vue({
-        el: '#app',
-        data: {
-            numbers: [ 1, 2, 3, 4, 5 ]
-        },
-        computed: {
-            evenNumbers: function () {
-                return this.numbers.filter(function (number) {
-                    return number % 2 === 0
-                })
+    Vue.component('button-counter', {
+        template: '<button v-on:click="increment">{{counter}}</button>',
+        data: function () {
+            return {
+                counter: 0
             }
         },
         methods: {
-            even: function (numbers) {
-                return numbers.filter(function (number) {
-                    return number % 2 === 0
-                })
+            increment: function () {
+                this.counter += 1;
+                this.$emit('increment')
+            }
+        }
+    });
+    new Vue({
+        el: '#app',
+        data: {
+            total: 0
+        },
+        methods: {
+            incrementTotal: function () {
+                this.total += 1;
             }
         }
     });
