@@ -4,32 +4,74 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="js/vue.js"></script>
+    <script src="js/currencyValidator.js"></script>
 </head>
 <body>
 <div id="app">
-    <currency-input v-model="price"></currency-input>
+    <currency-input label="Price" v-model="price"></currency-input>
+    <currency-input label="Shipping" v-model="shipping"></currency-input>
+    <currency-input label="Handling" v-model="handling"></currency-input>
+    <currency-input label="Discount" v-model="discount"></currency-input>
+
+    <p>Total: ${{total}}</p>
 </div>
 <script>
     Vue.component('currency-input', {
-        template: '<span>$ <input ref="input" v-bind:value="value" v-on:input="updateValue($event.target.value)"></span>',
-        props: ['value'],
+        template: '<div>\
+            <label v-if="label">{{label}}</label>\
+            $ <input ref="input" v-bind:value="value" v-on:input="updateValue($event.target.value)"\
+                v-on:focus="selectAll" v-on:blur="formatValue">\
+            </div>',
+        props: {
+            value: {
+                type: Number,
+                default: 0
+            },
+            label: {
+                type: String,
+                default: ''
+            }
+        },
+        mounted: function () {
+            this.formatValue()
+        },
         methods: {
             updateValue: function (value) {
-//                var formattedValue = value.trim().slice(0, value.indexOf('.') === -1?value.length : value.indexOf('.') + 3);
-                var formattedValue = value.trim().slice(0, value.indexOf('.') + 3);
-                if (formattedValue !== value) {
-                    this.$refs.input.value = formattedValue;
+                var result = currencyValidator.parse(value, this.value)
+                if (result.warning) {
+                    this.$refs.input.value = result.value
                 }
-                this.$emit('input', Number(formattedValue));
+                this.$emit('input', result.value)
+            },
+            formatValue: function () {
+                this.$refs.input.value = currencyValidator.format(this.value)
+            },
+            selectAll: function (event) {
+                setTimeout(function () {
+                    event.target.select()
+                }, 0)
             }
         }
-    });
+    })
     new Vue({
         el: '#app',
         data: {
-            price: 0
+            price: 0,
+            shipping: 0,
+            handling: 0,
+            discount: 0
+        },
+        computed: {
+            total: function () {
+                return ((
+                    this.price * 100 +
+                    this.shipping * 100 +
+                    this.handling * 100 -
+                    this.discount * 100
+                ) / 100).toFixed(2)
+            }
         }
-    });
+    })
 </script>
 </body>
 </html>
