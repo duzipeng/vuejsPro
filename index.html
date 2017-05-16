@@ -5,45 +5,28 @@
     <title>Title</title>
     <script src="js/vue.js"></script>
     <script src="js/currencyValidator.js"></script>
+    <style>
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s;
+        }
+        .fade-enter, .fade-leave-activi {
+            opacity: 0;
+        }
+    </style>
 </head>
 <body>
-<div id="example1">{{message}}</div>
-<div id="example2">
-    <example></example>
+<div id="demo">
+    <button v-on:click="show = !show">Toggle</button>
+    <transition name="fade">
+        <p v-if="show">hello</p>
+    </transition>
 </div>
 <script>
-    var vm = new Vue({
-        el: '#example1',
-        data: {
-            message: '123'
-        }
-    })
-    vm.message = 'new message'
-    vm.$el.textContent === 'new message'
-    Vue.nextTick(function () {
-        vm.$el.textContent === 'new message'
-    })
-
-    Vue.component('example', {
-        template: '<span>{{message}}</span>',
-        data: function () {
-            return {
-                message: 'not update'
-            }
-        },
-        method: {
-            updateMessage: function () {
-                this.message = 'updated'
-                console.log(this.$el.textContent)
-                this.$nextTick(function () {
-                    console.log(this.$el.textContent)
-                })
-            }
-        }
-    })
-
     new Vue({
-        el: '#example2'
+        el: '#demo',
+        data: {
+            show: true
+        }
     })
 </script>
 </body>
