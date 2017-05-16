@@ -5,69 +5,67 @@
     <title>Title</title>
     <script src="js/vue.js"></script>
     <script src="js/currencyValidator.js"></script>
+    <!--velocity.js 是一个简单易用、高性能、功能丰富的轻量级JS动画库-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+    <!--Lodash 是一个具有一致接口、模块化、高性能等特性的 JavaScript 工具库-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
+    <!-- tween.js是一款可生成平滑动画效果的js动画库。tween.js允许你以平滑的方式修改元素的属性值。它可以通过设置生成各种类似CSS3的动画效果-->
     <script src="https://unpkg.com/tween.js@16.3.4"></script>
+    <!--Color.js为前端开发者提供了一个简单的颜色管理的API-->
     <script src="https://unpkg.com/color-js@1.0.3/color.js"></script>
     <style>
-        .example-7-color-preview{
-            display: inline-block;
-            width: 50px;
-            height: 50px;
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 238px;
+            margin-top: 10px;
+        }
+        .cell {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 25px;
+            height: 25px;
+            border: 1px solid #aaa;
+            margin-right: -1px;
+            margin-bottom: -1px;
+        }
+        .cell:nth-child(3n) {
+            margin-right: 0;
+        }
+        .cell:nth-child(27n) {
+            margin-bottom: 0;
+        }
+        .cell-move {
+            transition: transform 1s;
         }
     </style>
 </head>
 <body>
-<div id="demo">
-    <input v-model="colorQuery" v-on:keyup.enter="updateColor" placeholder="Enter a color">
-    <button v-on:click="updateColor">Update</button>
-    <p>Preview: </p>
-    <span v-bind:style="{backgroundColor: tweenedCSSColor}" class="example-7-color-preview"></span>
-    <p>{{tweenedCSSColor}}</p>
+<div id="demo" class="demo">
+    <h1>Lazy Sudoku</h1>
+    <p>Keep hitting the shuffle button until you win.</p>
+
+    <button @click="shuffle">Shuffle</button>
+    <transition-group name="cell" tag="div" class="container">
+        <div v-for="cell in cells" :key="cell.id" class="cell">{{cell.number}}</div>
+    </transition-group>
 </div>
 <script>
-    var Color = net.brehaut.Color
     new Vue({
         el: '#demo',
         data: {
-            colorQuery: '',
-            color: {
-                red: 0,
-                green: 0,
-                blue: 0,
-                alpha: 1
-            },
-            tweenedColor: {}
-        },
-        created: function () {
-            this.tweenedColor = Object.assign({}, this.color)   //assign()合并对象
-        },
-        watch: {
-            color: function () {
-                function animate (time) {
-                    requestAnimationFrame(animate)
-                    TWEEN.update(time)
-                }
-                new TWEEN.Tween(this.tweenedColor)
-                    .to(this.color, 750)
-                    .start()
-                animate()
-            }
-        },
-        computed: {
-            tweenedCSSColor: function () {
-                return new Color({
-                    red: this.tweenedColor.red,
-                    green: this.tweenedColor.green,
-                    blue: this.tweenedColor.blue,
-                    alpha: this.tweenedColor.alpha
-                }).toCSS()
-            }
+            cells: Array.apply(null, {length: 81})
+                .map(function (_, index) {
+                    return {
+                        id: index,
+                        number: index % 9 + 1
+                    }
+                })
         },
         methods: {
-            updateColor: function () {
-                this.color = new Color(this.colorQuery).toRGB()
-                this.colorQuery = ''
+            shuffle: function () {
+                this.cells = _.shuffle(this.cells)
             }
         }
     })
