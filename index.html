@@ -7,36 +7,43 @@
     <script src="js/currencyValidator.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
     <style>
-        .component-fade-enter-active, .component-fade-leave-active {
-            transition: opacity .3s ease;
+        .list-item {
+            display: inline-block;
+            margin-right: 10px;
         }
-        .component-fade-enter, .component-fade-leave-active {
+        .list-enter-active, .list-leave-active {
+            transition: all 1s;
+        }
+        .list-enter, .list-leave-active {
             opacity: 0;
+            transform: translateY(30px);
         }
     </style>
 </head>
 <body>
-<div id="demo">
-    <input type="radio" id="a" value="v-a" v-model="view">
-    <label for="a">A</label>
-    <input type="radio" id="b" value="v-b" v-model="view">
-    <label for="b">B</label>
-    <transition name="component-fade" mode="out-in">
-        <component v-bind:is="view"></component>
-    </transition>
+<div id="demo" class="demo">
+    <button v-on:click="add">Add</button>
+    <button v-on:click="remove">Remove</button>
+    <transition-group name="list" tag="p">
+        <span v-for="item in items" v-bind:key="item" class="list-item">{{item}}</span>
+    </transition-group>
 </div>
 <script>
     new Vue({
         el: '#demo',
         data: {
-            view: 'v-a'
+            items: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            nextNum: 10
         },
-        components: {
-            'v-a': {
-                template: '<div>Component A</div>'
+        methods: {
+            randomIndex: function () {
+                return Math.floor(Math.random() * this.items.length)
             },
-            'v-b': {
-                template: '<div>Component B</div>'
+            add: function () {
+                this.items.splice(this.randomIndex(), 0, this.nextNum++)
+            },
+            remove: function () {
+                this.items.splice(this.randomIndex(), 1)
             }
         }
     })
