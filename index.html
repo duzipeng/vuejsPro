@@ -7,33 +7,43 @@
     <script src="js/currencyValidator.js"></script>
 </head>
 <body>
-<div id="mylist">
-    <my-awesome-list :items="items">
-        <template slot="item11" scope="props1">
-            <li class="my-fancy-item">
-                {{props1.text}}
-            </li>
-        </template>
-    </my-awesome-list>
+<div id="example1">{{message}}</div>
+<div id="example2">
+    <example></example>
 </div>
 <script>
-    var child = {
-        props: ['items'],
-        template: '<ul><slot name="item11" v-for="item in items" :text="item.text"></slot></ul>'
-    }
+    var vm = new Vue({
+        el: '#example1',
+        data: {
+            message: '123'
+        }
+    })
+    vm.message = 'new message'
+    vm.$el.textContent === 'new message'
+    Vue.nextTick(function () {
+        vm.$el.textContent === 'new message'
+    })
+
+    Vue.component('example', {
+        template: '<span>{{message}}</span>',
+        data: function () {
+            return {
+                message: 'not update'
+            }
+        },
+        method: {
+            updateMessage: function () {
+                this.message = 'updated'
+                console.log(this.$el.textContent)
+                this.$nextTick(function () {
+                    console.log(this.$el.textContent)
+                })
+            }
+        }
+    })
 
     new Vue({
-        el: '#mylist',
-        data: {
-            items: [
-                {text: '这是作用域插槽具有代表性的实例1'},
-                {text: '这是作用域插槽具有代表性的实例2'},
-                {text: '这是作用域插槽具有代表性的实例3'}
-            ]
-        },
-        components: {
-            'my-awesome-list': child
-        }
+        el: '#example2'
     })
 </script>
 </body>
