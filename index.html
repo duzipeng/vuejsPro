@@ -6,26 +6,29 @@
     <script src="js/vue.js"></script>
     <script src="js/currencyValidator.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
     <style>
-        .list-item {
+        .list-complete-item {
             display: inline-block;
             margin-right: 10px;
-        }
-        .list-enter-active, .list-leave-active {
             transition: all 1s;
         }
-        .list-enter, .list-leave-active {
+        .list-complete-enter, .list-compolete-leave-active {
             opacity: 0;
             transform: translateY(30px);
+        }
+        .list-complete-leave-active {
+            position: absolute;
         }
     </style>
 </head>
 <body>
 <div id="demo" class="demo">
+    <button v-on:click="shuffle">Shuffle</button>
     <button v-on:click="add">Add</button>
     <button v-on:click="remove">Remove</button>
-    <transition-group name="list" tag="p">
-        <span v-for="item in items" v-bind:key="item" class="list-item">{{item}}</span>
+    <transition-group name="list-complete" tag="p">
+        <span v-for="item in items" v-bind:key="item" class="list-complete-item">{{item}}</span>
     </transition-group>
 </div>
 <script>
@@ -44,6 +47,9 @@
             },
             remove: function () {
                 this.items.splice(this.randomIndex(), 1)
+            },
+            shuffle: function () {
+                this.items = _.shuffle(this.items)
             }
         }
     })
