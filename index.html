@@ -14,60 +14,48 @@
     <!--Color.js为前端开发者提供了一个简单的颜色管理的API-->
     <script src="https://unpkg.com/color-js@1.0.3/color.js"></script>
     <style>
-        .container {
-            /*以下两个属性值,让弹性盒元素在必要的时候拆行*/
-            display: flex;
-            flex-wrap: wrap;
-            width: 238px;
-            margin-top: 10px;
-        }
-        .cell {
-            /*以下两项属性值,让弹性盒对象的<div>元素中的各项周围留有空白*/
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            width: 25px;
-            height: 25px;
-            border: 1px solid #aaa;
-            margin-right: -1px;
-            margin-bottom: -1px;
-        }
-        .cell:nth-child(3n) {
-            margin-right: 0;
-        }
-        .cell:nth-child(27n) {
-            margin-bottom: 0;
-        }
-        .cell-move {
-            transition: transform 1s;
-        }
+
     </style>
 </head>
 <body>
 <div id="demo" class="demo">
-    <h1>Lazy Sudoku</h1>
-    <p>Keep hitting the shuffle button until you win.</p>
-
-    <button @click="shuffle">Shuffle</button>
-    <transition-group name="cell" tag="div" class="container">
-        <div v-for="cell in cells" :key="cell.id" class="cell">{{cell.number}}</div>
-    </transition-group>
+    Fade In: <input type="range" v-model="fadeInDuration" min="0" v-bind:max="maxFadeDuration">
+    Fade Out: <input type="range" v-model="fadeOutDuration" min="0" v-bind:max="maxFadeDuration">
+    <transition v-bind:css="false" v-on:before-enter="beforeEnter" v-on:leave="leave" v-on:enter="enter">
+        <p v-if="show">hello</p>
+    </transition>
+    <button v-on:click="stop = true">Stop it!</button>
 </div>
 <script>
     new Vue({
         el: '#demo',
         data: {
-            cells: Array.apply(null, {length: 81})
-                .map(function (_, index) {
-                    return {
-                        id: index,
-                        number: index % 9 + 1
-                    }
-                })
+            show: true,
+            fadeInDuration: 1000,
+            fadeOutDuration: 1000,
+            maxFadeDuration: 1500,
+            stop: false
+        },
+        mounted: function () {
+            this.show = false
         },
         methods: {
-            shuffle: function () {
-                this.cells = _.shuffle(this.cells)
+            beforeEnter: function (el) {
+                el.style.opacity = 0
+            },
+            enter: function (el, done) {
+                var vm = this
+                Velocity(el, {opacity: 1}, {duration: this.fadeInDuration, complete: function () {
+                    done()
+                    if (!vm.stop) vm.show = false
+                }})
+            },
+            leave: function (el, done) {
+                var vm = this
+                Velocity(el, {opacity: 0}, {duration: this.fadeOutDuration, complete: function () {
+                    done()
+                    vm.show = true
+                }})
             }
         }
     })
