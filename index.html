@@ -15,33 +15,50 @@
     <script src="js/color.js"></script>
     <!--TweenLite.min.js动画引擎-->
     <script src="js/TweenLite.min.js"></script>
+    <script src="js/vue-router.js"></script>
     <style>
 
     </style>
 </head>
 <body>
 <div id="demo">
-    <div v-demo:hello.a.b="message"></div>
+    <h1>Hello App!</h1>
+    <p>
+        <!--使用 router-link 组件来导航-->
+        <!--通过传入'to'属性制定链接-->
+        <!-- <router-link> 默认会被渲染成一个 '<a>' 标签-->
+        <router-link to="/foo">go to foo</router-link>
+        <router-link to="/bar">go to bar</router-link>
+    </p>
+    <!--路由出口-->
+    <!--路由匹配到的组件将渲染在这里-->
+    <router-view></router-view>
 </div>
 <script>
-    Vue.directive('demo', {
-        bind: function (el, binding, vnode) {
-            var s = JSON.stringify
-            el.innerHTML = 'name: ' + s(binding.name) + '<br>' +
-                    'value: ' + s(binding.value) + '<br>' +
-                    'expression: ' + s(binding.expression) + '<br>' +
-                    'argument: ' + s(binding.arg) + '<br>' +
-                    'modifiers: ' + s(binding.modifiers) + '<br>' +
-                    'vnode keys: ' + Object.keys(vnode).join(', ')
-        }
+//    0. 如果使用模块化机制编程, 导入Vue和VueRouter, 要调用Vue.use(VueRouter)
+//    1. 定义(路由)组件
+//    2. 可以从其他文件 import 进来
+    const Foo = { template: '<div>foo</div>'}
+    const Bar = { template: '<div>bar</div>'}
+
+//    2. 定义路由
+//    每个路由应该映射一个组件.其中 component 可以是通过Vue.extend()创建的组件构造器,
+//    或者,只是一个组件配置对象.
+    const routes = [
+        { path: '/foo', component: Foo },
+        { path: '/bar', component: Bar }
+    ]
+
+//    3. 创建 router 实例, 然后传 'routes' 配置
+    const router = new VueRouter({
+        routes    // (缩写) routes: routes
     })
 
-    new Vue({
-        el: '#demo',
-        data: {
-            message: 'hello!'
-        }
-    })
+//    4. 创建和挂载根实例
+//    记得要通过 router 配置参数注入路由, 从而让整个应用都有路由功能
+    const app = new Vue({
+        router
+    }).$mount('#demo')
 </script>
 </body>
 </html>
